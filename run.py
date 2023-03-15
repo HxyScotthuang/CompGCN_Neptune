@@ -287,6 +287,7 @@ class Runner(object):
 		right_results = self.predict(split=split, mode='head_batch')
 		results       = get_combined_results(left_results, right_results)
 		self.logger.info('[Epoch {} {}]: MRR: Tail : {:.5}, Head : {:.5}, Avg : {:.5}'.format(epoch, split, results['left_mrr'], results['right_mrr'], results['mrr']))
+		
 		return results
 
 	def predict(self, split='valid', mode='tail_batch'):
@@ -390,7 +391,10 @@ class Runner(object):
 		for epoch in range(self.p.max_epochs):
 			train_loss  = self.run_epoch(epoch, val_mrr)
 			val_results = self.evaluate('valid', epoch)
-
+			# Logging the results
+			for key in val_results.keys():
+				run[f"val/{key}"] = val_results[key]
+				
 			if val_results['mrr'] > self.best_val_mrr:
 				self.best_val	   = val_results
 				self.best_val_mrr  = val_results['mrr']
@@ -411,6 +415,9 @@ class Runner(object):
 		self.logger.info('Loading best model, Evaluating on Test data')
 		self.load_model(save_path)
 		test_results = self.evaluate('test', epoch)
+		# Logging the results
+		for key in test_results.keys():
+      			run[f"test/{key}"] = test_results[key]
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='Parser For Arguments', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -468,3 +475,4 @@ if __name__ == '__main__':
 	
 	model = Runner(args)
 	model.fit()
+	run.stop()
