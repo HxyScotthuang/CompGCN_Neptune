@@ -9,6 +9,6 @@ module purge
 module load Anaconda3
 source activate $DATA/myenv
 
-pip install -r requirement.txt
+pip install -r requirements.txt
 
 python run.py -score_func distmult -opn mult -gcn_layer 3 -gpu 0 -data WN18RR -name WN 
