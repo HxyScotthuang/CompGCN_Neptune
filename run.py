@@ -3,6 +3,12 @@ from data_loader import *
 
 # sys.path.append('./')
 from model.models import *
+import neptune.new as neptune
+
+run = neptune.init_run(
+    project="R-NBFNet/CMPNN-Rebuttal",
+    api_token="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiIzNmY3MWNhOS03YjJmLTQzZDUtYmFiMi1jMWRmMThjNDc5ZWMifQ==",
+)  # your credentials
 
 class Runner(object):
 
@@ -453,6 +459,12 @@ if __name__ == '__main__':
 	set_gpu(args.gpu)
 	np.random.seed(args.seed)
 	torch.manual_seed(args.seed)
-
+	
+	params = {}
+	for arg in vars(args):
+    		params[f"{arg}"] = getattr(args, arg)
+	params['dataset/class'] = 'CompGCN'
+	run["params"] = params
+	
 	model = Runner(args)
 	model.fit()
