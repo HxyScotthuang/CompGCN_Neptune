@@ -320,6 +320,7 @@ class Runner(object):
 				target_pred		= pred[b_range, obj]
 				pred 			= torch.where(label.byte(), -torch.ones_like(pred) * 10000000, pred)
 				pred[b_range, obj] 	= target_pred
+
 				ranks			= 1 + torch.argsort(torch.argsort(pred, dim=1, descending=True), dim=1, descending=False)[b_range, obj]
 
 				ranks 			= ranks.float()
@@ -417,7 +418,7 @@ class Runner(object):
 		test_results = self.evaluate('test', epoch)
 		# Logging the results
 		for key in test_results.keys():
-      			run[f"test/{key}"] = test_results[key]
+			run[f"test/{key}"] = test_results[key]
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='Parser For Arguments', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -469,8 +470,9 @@ if __name__ == '__main__':
 	
 	params = {}
 	for arg in vars(args):
-    		params[f"{arg}"] = getattr(args, arg)
-	params['dataset/class'] = 'CompGCN'
+		params[str(arg)] = getattr(args, arg)
+	print(params)
+	params['model'] = 'CompGCN'
 	run["params"] = params
 	
 	model = Runner(args)
